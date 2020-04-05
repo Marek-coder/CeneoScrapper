@@ -2,18 +2,18 @@
 ## Etap 1 - Analiza struktury opinii w serwisie [Ceneo.pl] (https://www.ceneo.pl/)
 |Składowa                |Selektor                                        |Nazwa zmiennej|
 |------------------------|------------------------------------------------|--------------|
-|opinia                  |li.js_product-review                            |
-|identyfikator opinii    |["data-entry-id"]                               |
-|autor                   |div.reviewer-name-line                          |
-|rekomendacja            |div.product-review-summary > em                 |
-|ocena                   |span.review-score-count                         |
-|treść opinii            |p.product-review-body                           |
-|lista wad               |div.cons-cell > ul                              |
-|lista zalet             |div.pros-cell > ul                              |
-|przydatna               |button.vote-yes > span                          |
-|nieprzydatna            |button.vote-no > span                           |
-|data wystawienia opinii |span.review-time > time:first-child["datetime"] |
-|data zakupu             |span.review-time > time:nth-child(2)["datetime"]|
+|opinia                  |li.js_product-review                            |opinion	 |
+|identyfikator opinii    |["data-entry-id"]                               |opinion_id    |
+|autor                   |div.reviewer-name-line                          |author	 |
+|rekomendacja            |div.product-review-summary > em                 |recommendation|
+|ocena                   |span.review-score-count                         |stars  	 |
+|treść opinii            |p.product-review-body                           |content	 |
+|lista wad               |div.cons-cell > ul                              |cons	 	 |
+|lista zalet             |div.pros-cell > ul                              |pros		 |
+|przydatna               |button.vote-yes > span                          |useful	 |
+|nieprzydatna            |button.vote-no > span                           |useless	 |
+|data wystawienia opinii |span.review-time > time:first-child["datetime"] |opinion_date	 |
+|data zakupu             |span.review-time > time:nth-child(2)["datetime"]|purchase_date |
 
 ## Etap2 - pobranie składowych pojedynczej opinii biblioteka() http request)
 ## pobranie kodu jednej strony z opiniami o  konkretnym produkcie
