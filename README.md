@@ -20,3 +20,11 @@
 ## wyciągnięcie z kodu strony fragmentów odpowiadających poszczególnym opiniom(beautyfull)
 ## zapisanie do pojedynczych zmiennych wartosci poszczegolnych skladowych opinii(date frame pandas)
 ## parametr -a dziala tylko przy zmieniancyh plikach nie nowych
+## etap3 pobranie wszystkich opini o pojedynczym produkcie
+## przechodzenie po kolejnych stronach z opiniami
+## zapis wszystkich opinii o pojedynczym produkcie do pliku
+## etap 4
+#	Wyczyszczenie danych i transformacja
+#    refaktorin kodu(usuniecie powtarzajacego sie kodu)
+#	przerobic to by pobierac opinie dla dowolnego produktu
+	

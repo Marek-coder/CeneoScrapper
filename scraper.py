@@ -3,7 +3,16 @@ import requests
 from bs4 import BeautifulSoup
 import pprint
 import json
-
+import pandas
+#funkcja do ekstrakcji skladowych
+def extract_feature(opinion,selector,atribute=None):
+    try:
+        if atribute:
+            return opinion.select(selector).pop()[atribute].strip()
+        else:
+            return opinion.select(selector).pop().text.strip()
+    except IndexError:
+        return None
 #pobranie kodu pojedynczej strony z opinia
 url_prefix ='https://www.ceneo.pl'
 url_postfix ='/85910996#tab=reviews_scroll'
@@ -22,28 +31,24 @@ while url:
 
     for opinion in opinions:
         opinion_id=opinion["data-entry-id"]
-        author = opinion.select('div.reviewer-name-line').pop().text.strip()
-        try:
-            recommendation = opinion.select('div.product-review-summary>em').pop().text
-        except IndexError:
-            recommendation=None
-        stars = opinion.select('span.review-score-count').pop().text
-        content = opinion.select('p.product-review-body').pop().text
-        try:
-            cons = opinion.select('div.cons-cell > ul').pop().text
-        except IndexError:
-            cons=None
-        try:
-            pros = opinion.select('div.pros-cell > ul').pop().text
-        except IndexError:
-            pros= None
-        useful = opinion.select('button.vote-yes > span').pop().text
-        useless = opinion.select('button.vote-no > span').pop().text
-        opinion_date = opinion.select('span.review-time > time:nth-child(1)').pop()['datetime']
-        try:
-            purchase_date = opinion.select('span.review-time > time:nth-child(1)').pop()['datetime']
-        except IndexError:
-            purchase_date=None
+        author =extract_feature(opinion,('div.reviewer-name-line'))
+        
+        recommendation= extract_feature(opinion,('div.product-review-summary>em'))
+        
+        stars =extract_feature(opinion,('span.review-score-count'))
+        content = extract_feature(opinion,('p.product-review-body'))
+        
+        cons = extract_feature(opinion,('div.cons-cell > ul'))
+       
+        
+        pros = extract_feature(opinion,('div.pros-cell > ul'))
+       
+        useful = extract_feature(opinion,('button.vote-yes > span'))
+        useless = extract_feature(opinion,('button.vote-no > span'))
+        opinion_date = extract_feature(opinion,('span.review-time > time:nth-child(1)'),atribute='datetime')
+       
+        purchase_date = extract_feature(opinion,('span.review-time > time:nth-child(1)'),atribute='datetime')
+    
 
         features={
             "opinion_id":opinion_id,
