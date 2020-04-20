@@ -13,65 +13,64 @@ def extract_feature(opinion,selector,atribute=None):
             return opinion.select(selector).pop().text.strip()
     except IndexError:
         return None
+
+#slownik selktorow dla poszczegolnych skladowych
+selectors = {
+    "author":["div.reviewer-name-line"],
+    "recommendation":["div.product-review-summary > em"],
+    "stars":["span.review-score-count"],
+    "content":["p.product-review-body"],
+    "cons":["div.cons-cell > ul"],
+    "pros":["div.pros-cell > ul"],
+    "useful":["button.vote-yes > span"],
+    "useless":["button.vote-no > span"],
+    "opinion_date":["span.review-time > time:nth-child(1)", "datetime"],
+    "purchase_date":["span.review-time > time:nth-child(2)", "datetime"]
+}
 #pobranie kodu pojedynczej strony z opinia
 url_prefix ='https://www.ceneo.pl'
-url_postfix ='/85910996#tab=reviews_scroll'
-url=url_prefix+url_postfix
+product_id=input('Podaj nr id produktu')
+url_postfix ='#tab=reviews_scroll'
+url=url_prefix+'/'+product_id+url_postfix
 
 
 #wodbycie z kodu strony fragmentow odpowiadajacych opiniom konsumentow
 all_opinions=[]
 
+
 while url:
     #dla wszystkich opinii wydobycie jej skladowych
-    
-    response =requests.get(url)
-    page_dom =BeautifulSoup(response.text,'html.parser')
-    opinions = page_dom.select('li.js_product-review')
-
+    respons=requests.get(url)
+    page_dom=BeautifulSoup(respons.text,'html.parser')
+    opinions=page_dom.select("li.js_product-review")
     for opinion in opinions:
-        opinion_id=opinion["data-entry-id"]
-        author =extract_feature(opinion,('div.reviewer-name-line'))
-        
-        recommendation= extract_feature(opinion,('div.product-review-summary>em'))
-        
-        stars =extract_feature(opinion,('span.review-score-count'))
-        content = extract_feature(opinion,('p.product-review-body'))
-        
-        cons = extract_feature(opinion,('div.cons-cell > ul'))
-       
-        
-        pros = extract_feature(opinion,('div.pros-cell > ul'))
-       
-        useful = extract_feature(opinion,('button.vote-yes > span'))
-        useless = extract_feature(opinion,('button.vote-no > span'))
-        opinion_date = extract_feature(opinion,('span.review-time > time:nth-child(1)'),atribute='datetime')
-       
-        purchase_date = extract_feature(opinion,('span.review-time > time:nth-child(1)'),atribute='datetime')
-    
+        features={key:extract_feature(opinion, *args)
+                for key,args in selectors.items()}
 
-        features={
-            "opinion_id":opinion_id,
-            "author":author,
-            "recommendation":recommendation,
-            "stars":stars,
-            "content":content,
-            "cons": cons,
-            "pros": pros,
-            "useful":useful,
-            "useless":useless,
-            "opinion_date":opinion_date,
-            "purchase_date":purchase_date
-        }
+        features["opinion_id"]=int(opinion["data-entry-id"])
+        features["useful"]=int(features["useful"])
+        features["useless"]=int(features["useless"])
+        features["stars"]=float(features["stars"].split('/')[0].replace(",","."))        
+        features["content"]=features['content'].replace('/n',' ').replace("/r",' ')
+        try:
+            features["pros"]=features["pros"].replace('/n', " ").replace('/r'," ")
+        except AttributeError:
+            pass
+        try:
+            features["cons"]=features["cons"].replace('/n', " ").replace('/r'," ")
+        except AttributeError:
+            pass        
+    #dodawanie pojedynczej opinii do listy
         all_opinions.append(features)
 
-   
+    
     try:
         url= url_prefix+page_dom.select('a.pagination__next').pop()['href']
     except IndexError:
         url=None
-    with open('opinions.json','w',encoding='UTF-8')as fp:
-        json.dump(all_opinions,fp,indent=4,ensure_ascii=False)
-        print(len(all_opinions))
-        print(url)
+
+    print(len(all_opinions))
+    print(url )
+with open('opinions'+product_id+'.json','w',encoding='UTF-8')as fp:
+    json.dump(all_opinions,fp,indent=4,ensure_ascii=False)
 
