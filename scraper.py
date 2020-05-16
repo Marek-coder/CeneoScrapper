@@ -8,6 +8,7 @@ import pandas
 def extract_feature(opinion,selector,atribute=None):
     try:
         if atribute:
+            # select zawsze zwraca liste
             return opinion.select(selector).pop()[atribute].strip()
         else:
             return opinion.select(selector).pop().text.strip()
@@ -17,6 +18,7 @@ def extract_feature(opinion,selector,atribute=None):
 #slownik selktorow dla poszczegolnych skladowych
 selectors = {
     "author":["div.reviewer-name-line"],
+    # em jest bezposrednim potomkiem div.pro...
     "recommendation":["div.product-review-summary > em"],
     "stars":["span.review-score-count"],
     "content":["p.product-review-body"],
@@ -50,14 +52,14 @@ while url:
         features["opinion_id"]=int(opinion["data-entry-id"])
         features["useful"]=int(features["useful"])
         features["useless"]=int(features["useless"])
-        features["stars"]=float(features["stars"].split('/')[0].replace(",","."))        
-        features["content"]=features['content'].replace('/n',' ').replace("/r",' ')
+        features["stars"]=float(features['stars'].split('/')[0].replace(',','.'))  
+        features["content"]=features['content'].replace('\n',' ').replace("\r",' ')
         try:
-            features["pros"]=features["pros"].replace('/n', " ").replace('/r'," ")
+            features["pros"]=features["pros"].replace('\n', " ").replace('\r'," ")
         except AttributeError:
             pass
         try:
-            features["cons"]=features["cons"].replace('/n', " ").replace('/r'," ")
+            features["cons"]=features["cons"].replace('\n', " ").replace('\r'," ")
         except AttributeError:
             pass        
     #dodawanie pojedynczej opinii do listy
@@ -71,6 +73,6 @@ while url:
 
     print(len(all_opinions))
     print(url )
-with open('opinions'+product_id+'.json','w',encoding='UTF-8')as fp:
-    json.dump(all_opinions,fp,indent=4,ensure_ascii=False)
 
+with open("opinions_json/"+product_id+".json", "w", encoding="UTF-8") as fp:
+    json.dump(all_opinions, fp, indent=4, ensure_ascii=False)
